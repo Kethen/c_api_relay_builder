@@ -79,11 +79,15 @@ int main(int c, char **argv){
 		LOG("static void (*%s_)() = NULL;\n", itr->c_str());
 	}
 
-	LOG("extern \"C\"{\n")
+	LOG("#ifdef __cplusplus\n");
+	LOG("extern \"C\"{\n");
+	LOG("#endif\n");
 	for(auto itr = syms.begin(); itr != syms.end(); itr++){
 		LOG("	void %s(void){%s_();}\n", itr->c_str(), itr->c_str());
 	}
+	LOG("#ifdef __cplusplus\n");
 	LOG("}\n");
+	LOG("#endif\n");
 
 	char new_name[512] = {0};
 	memcpy(new_name, mod_name, strlen(mod_name) - 4);
