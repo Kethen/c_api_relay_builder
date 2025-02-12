@@ -5,6 +5,8 @@
 
 It will generate `<target.dll>_relay.h` which can be included into builds, uses `LOG(...)` to report errors, and a `load_syms_<dll name>` init function
 
+`load_syms_<dll name>` loads the original dll at '_<dll_name>'
+
 eg.
 
 ```
@@ -13,7 +15,7 @@ eg.
 #include <my_lib.dll_relay.h>
 
 int main (){
-	load_syms_my_lib()
+	load_syms_my_lib(); // init call relays to ./_my_lib.dll
 	...
 }
 ...
