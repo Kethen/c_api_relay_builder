@@ -23,7 +23,7 @@ BOOL CALLBACK EnumSymProc(
     ULONG SymbolSize,      
     PVOID UserContext)
 {
-	if(strcmp("EntryPoint", pSymInfo->Name) == 0){
+	if((pSymInfo->Flags & SYMFLAG_EXPORT) == 0 || strcmp("EntryPoint", pSymInfo->Name) == 0){
 		return TRUE;
 	}
 
@@ -42,14 +42,16 @@ int main(int c, char **argv){
 	strcpy(mod_name, argv[1]);
 	sprintf(log_file_name, "%s_relay.h", mod_name);
 
-	HMODULE lib = LoadLibraryA(mod_name);
+	char mod_path[1024];
+	sprintf(mod_path, "./%s", mod_name);
+	HMODULE lib = LoadLibraryA(mod_path);
 
 	if(lib == NULL){
-		LOG("failed opening %s\n", mod_name);
+		LOG("failed opening %s\n", mod_path);
 		exit(1);
 	}
 
-	// ref https://learn.microsoft.com/en-us/windows/win32/api/dbghelp/nf-dbghelp-symenumsymbols
+	// ref https://learn.microsoft.com/en-us/windows/win32/debug/enumerating-symbols
 	HANDLE hProcess = GetCurrentProcess();
 	DWORD64 BaseOfDll;
 	const char *Mask = "*";
